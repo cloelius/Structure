@@ -47,6 +47,7 @@ class chi:#At some level a general second order differential equation solver, wh
     sindelta=0
     Mass=931.49272#Where this comes from taking .0478 from the notes, dividing by 2, multipling by hbar, and then dividing by (1 fm^2*1MeV)
     crosssection=0
+    aindex=0
     def SetDiffEq(self):
         self.diff=diffeq(self.L,self.Energy)
     def SolveDifeq(self):
@@ -58,10 +59,10 @@ class chi:#At some level a general second order differential equation solver, wh
         k=np.sqrt(.047845*self.Energy)#hbar^2k^2/2m=E
         return k
     def SetRMatrix(self):
-        self.Rmat=self.chivalues[-1]/self.chiprimevalues[-1]/self.rvalues[-1]
+        self.Rmat=self.chivalues[aindex]/self.chiprimevalues[aindex]/self.rvalues[aindex]
     def SetSMatrix(self):
         k=self.GetK()
-        a=self.rvalues[-1]
+        a=self.rvalues[aindex]
         #a=self.chivalues[-1]
         num=HenkelMinus(k*a,self.L)-a*self.Rmat*HenkelMinusPrime(k*a,self.L,k)
         denom=HenkelPlus(k*a,self.L)-a*self.Rmat*HenkelPlusPrime(k*a,self.L,k)
@@ -80,12 +81,12 @@ class chi:#At some level a general second order differential equation solver, wh
         self.sindelta=(sin(np.real(self.delta)))
     def SetCrossSection(self):
         self.crosssection=(self.sindelta)**2
-    def __init__(self, rvalues,Energy,L,init):
+    def __init__(self, rvalues,Energy,L,init,aindex):
         self.rvalues=rvalues
         self.Energy=Energy
         self.L=L
         self.init=init
-        
+        self.aindex=aindex
 def twodplot(x,y,title,xaxis,yaxis):
     fig=plt.figure()
     ax2=fig.add_subplot(111)
@@ -100,8 +101,9 @@ Ls=[0,1,2]
 mychi=[]
 pychi=[]
 radwaves=[]
+ain=-10
 for vars in product(Energies,Ls):
-    radwav=chi(r,vars[0],vars[1],init)
+    radwav=chi(r,vars[0],vars[1],init,ain)
     radwav.SetDiffEq()
     radwav.SolveDifeq()
     radwav.SetRMatrix()
@@ -128,7 +130,7 @@ for a in rs:
     Energy=10
     L=0
     rr=np.linspace(.00001,a,10)
-    radwav=chi(rr,Energy,L,init)
+    radwav=chi(rr,Energy,L,init,ain)
     radwav.SetDiffEq()
     radwav.SolveDifeq()
     radwav.SetRMatrix()
@@ -158,7 +160,7 @@ for L in Ls:
     for En in EnergiesDelta:
         i=i+1
         print(i)
-        radwav=chi(r,En,L,init)
+        radwav=chi(r,En,L,init,ain)
         radwav.SetDiffEq()
         radwav.SolveDifeq()
         radwav.SetRMatrix()
