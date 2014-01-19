@@ -94,8 +94,8 @@ def twodplot(x,y,title,xaxis,yaxis):
     plt.title(title)
     plt.xlabel(xaxis)
     plt.ylabel(yaxis)
-init=[.00000000000001,1]
-r=np.linspace(.0001,100,200)
+init=[.001,.001]
+r=np.linspace(.0001,100,2000)
 Energies=[.1,10]   
 Ls=[0,1,2]
 mychi=[]
@@ -147,8 +147,8 @@ twodplot(rs,sindeltas,"sin delta vs a at Energy .1 MeV and L 1","r(fm)", "sin de
 twodplot(rs,Ss,"S vs a at Energy .1 MeV and L 1","r(fm)", "S")
 twodplot(r,mychi,"mychi","x","chi")
 twodplot(r,pychi,"pychi","x","chi")
-twodplot(r,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
-EnergiesDelta=np.linspace(.1,40,400)
+twodplot(rs,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
+EnergiesDelta=np.linspace(.1,4,800)
 for L in Ls:
     deltasen=[]
     sindeltasen=[]
