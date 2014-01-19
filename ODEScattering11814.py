@@ -59,10 +59,10 @@ class chi:#At some level a general second order differential equation solver, wh
         k=np.sqrt(.047845*self.Energy)#hbar^2k^2/2m=E
         return k
     def SetRMatrix(self):
-        self.Rmat=self.chivalues[aindex]/self.chiprimevalues[aindex]/self.rvalues[aindex]
+        self.Rmat=self.chivalues[self.aindex]/self.chiprimevalues[self.aindex]/self.rvalues[self.aindex]
     def SetSMatrix(self):
         k=self.GetK()
-        a=self.rvalues[aindex]
+        a=self.rvalues[self.aindex]
         #a=self.chivalues[-1]
         num=HenkelMinus(k*a,self.L)-a*self.Rmat*HenkelMinusPrime(k*a,self.L,k)
         denom=HenkelPlus(k*a,self.L)-a*self.Rmat*HenkelPlusPrime(k*a,self.L,k)
@@ -147,14 +147,15 @@ twodplot(rs,sindeltas,"sin delta vs a at Energy .1 MeV and L 1","r(fm)", "sin de
 twodplot(rs,Ss,"S vs a at Energy .1 MeV and L 1","r(fm)", "S")
 twodplot(r,mychi,"mychi","x","chi")
 twodplot(r,pychi,"pychi","x","chi")
-
-EnergiesDelta=np.linspace(.1,4,4)
+twodplot(r,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
+EnergiesDelta=np.linspace(.1,40,400)
 for L in Ls:
     deltasen=[]
     sindeltasen=[]
     Smats=[]
     rmats=[]
     rmatsfromsmats=[]
+    crosssections=[]
     print(len(EnergiesDelta))
     i=0
     for En in EnergiesDelta:
@@ -167,14 +168,17 @@ for L in Ls:
         radwav.SetSMatrix()
         radwav.SetDelta()
         radwav.SetSinDelta()
+        radwav.SetCrossSection()
         deltasen.append(radwav.delta)
         sindeltasen.append(radwav.sindelta)
         Smats.append(radwav.SMat)
         rmats.append(np.abs(radwav.Rmat))
-        rmatsfromsmats.append(1/radwav.rvalues[-1]*(HenkelMinus(radwav.GetK()*radwav.rvalues[-1],radwav.L)-radwav.SMat*HenkelPlus(radwav.GetK()*radwav.rvalues[-1],radwav.L))/((HenkelMinusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK())-radwav.SMat*HenkelPlusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK()))))
+        crosssections.append(radwav.crosssection)
+        rmatsfromsmats.append(1/radwav.rvalues[ain]*(HenkelMinus(radwav.GetK()*radwav.rvalues[ain],radwav.L)-radwav.SMat*HenkelPlus(radwav.GetK()*radwav.rvalues[-1],radwav.L))/((HenkelMinusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK())-radwav.SMat*HenkelPlusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK()))))
     twodplot(EnergiesDelta,deltasen," delta vs Energy for  L "+str(L),"E(MeV)", "delta")
     twodplot(EnergiesDelta,sindeltasen," sin delta vs Energy for  L "+str(L),"E(MeV)", " sin delta")
     twodplot(EnergiesDelta,Smats," SMat vs Energy for  L "+str(L),"E(MeV)", " SMat")
     twodplot(EnergiesDelta,rmats," RMat vs Energy for  L "+str(L),"E(MeV)", " RMat")
     twodplot(EnergiesDelta,rmatsfromsmats," RMat from Smat vs Energy for  L "+str(L),"E(MeV)", " RMat")
+    twodplot(EnergiesDelta,crosssections," Cross section vs Energy for  L "+str(L),"E(MeV)", " Cross Section")
 plt.show()
