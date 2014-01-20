@@ -17,7 +17,7 @@ def MakeZNPlot(Z,N,X,TITLE):
     a=ax.scatter(N,Z,s=15,c=X, marker = 'o', cmap = cm.jet );
     plt.colorbar(a)
     plt.show()
-    
+    plt.savefig(TITLE+".png")
 def MakeAPlot(A,X,TITLE,YLAB):
     fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111)
@@ -25,24 +25,25 @@ def MakeAPlot(A,X,TITLE,YLAB):
     ax.set_xlabel("A",fontsize=12)
     ax.set_ylabel(YLAB,fontsize=12)
     ax.grid(True,linestyle='-',color='0.75')
-    ax.set_xlim([0,240])
+    ax.set_xlim([0,300])
 
 
     # scatter with colormap mapping to z value
     ax.scatter(A,X,s=5, marker = 'o' );
-
+    plt.savefig(TITLE+".png")
     plt.show()
-def MakeAPlots(A,X,TITLE,YLAB):
+def MakeAPlots(A,X,TITLE,YLAB,names):
     fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111)
-    ax.set_xlim([0,240])
+    ax.set_xlim([0,300])
     ax.set_title(TITLE,fontsize=14)
     ax.set_xlabel("A",fontsize=12)
     ax.set_ylabel(YLAB,fontsize=12)
     ax.grid(True)
-
-    for x in X:
-        plt.plot(A,x)
+    for i,x in enumerate(X):
+        plt.plot(A,x,label=names[i])
+    plt.legend(loc=4)
+    plt.savefig(TITLE+".png")
     plt.show()
 def WBBE(A,Z,a1,a2,a3,a4):
         N=A-Z
@@ -160,6 +161,7 @@ WBs.append(WBBEsalpha1)
 WBs.append(WBBEsalpha12)
 WBs.append(WBBEsalpha123)
 WBs.append(WBBEsalpha1234)
-MakeAPlots(As,WBs,"Different Terms in Liquid Drop","Binding Energy(MeV)")
+names=["Volume Term", "Volume and Surface Term", "Volume, Surface, and Coulomb term", "Volume, Surface, Coulomb and Pairing term"]
+MakeAPlots(As,WBs,"Different Terms in Liquid Drop","Binding Energy per Nucleon(MeV)",names)
 #print(nuclei[20].Sp)
 #print(nuclei[20].Sn)
