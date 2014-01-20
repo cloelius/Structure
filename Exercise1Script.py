@@ -4,14 +4,17 @@ from matplotlib  import cm
 def MakeZNPlot(Z,N,X,TITLE):
     fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111)
-    ax.set_title(TITLE,fontsize=14)
-    ax.set_xlabel("Z",fontsize=12)
-    ax.set_ylabel("N",fontsize=12)
+    ax.set_title(TITLE,fontsize=24)
+    ax.set_xlabel("N",fontsize=16)
+    ax.set_ylabel("Z",fontsize=16)
+    ax.set_ylim([0,120])
+    ax.set_xlim([0,160])
+
     ax.grid(True,linestyle='-',color='0.75')
     
 
     # scatter with colormap mapping to z value
-    a=ax.scatter(Z,N,s=15,c=X, marker = 'o', cmap = cm.jet );
+    a=ax.scatter(N,Z,s=15,c=X, marker = 'o', cmap = cm.jet );
     plt.colorbar(a)
     plt.show()
     
@@ -22,7 +25,8 @@ def MakeAPlot(A,X,TITLE,YLAB):
     ax.set_xlabel("A",fontsize=12)
     ax.set_ylabel(YLAB,fontsize=12)
     ax.grid(True,linestyle='-',color='0.75')
-    
+    ax.set_xlim([0,240])
+
 
     # scatter with colormap mapping to z value
     ax.scatter(A,X,s=5, marker = 'o' );
@@ -31,6 +35,7 @@ def MakeAPlot(A,X,TITLE,YLAB):
 def MakeAPlots(A,X,TITLE,YLAB):
     fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111)
+    ax.set_xlim([0,240])
     ax.set_title(TITLE,fontsize=14)
     ax.set_xlabel("A",fontsize=12)
     ax.set_ylabel(YLAB,fontsize=12)
