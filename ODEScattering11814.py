@@ -5,6 +5,20 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy import special
 from itertools import product
 from scipy.optimize import fsolve, curve_fit
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+def makeanglecontinuous(angles):
+    "Renormalize Angles to remove discontinuities by adding n*pi"
+    count=0#how many times n pi we need to add/subtract
+    outarray=[]
+    for theta in angles:
+        if(theta>=0):
+            outarray.append(theta)
+        else:
+            outarray.append(theta+np.pi)
+    return outarray
+
 def diffeq(L,Energy):
     "This function returns a function that will be the differential equation to be solved based on E and L"
     def deriv_chi(f, r):
@@ -85,13 +99,14 @@ class chi:
     def SetDelta(self):
         "Calculate Delta From Logarithm"
         self.delta=1/(2j)*np.log(self.SMat)
+        
       #  print(self.delta)
     def SetSinDelta(self):
         "Calculate Sin Delta, save in chi"
         self.sindelta=(sin(np.real(self.delta)))
     def SetCrossSection(self):
-        "Calculate Cross Section in units of inverse k squared"
-        self.crosssection=4*np.pi*(2*self.L+1)/(self.GetK()**2)*(self.sindelta)**2
+        "Calculate Cross Section in units of barns"
+        self.crosssection=4*np.pi*(2*self.L+1)/(100*self.GetK()**2)*(self.sindelta)**2
     def __init__(self, rvalues,Energy,L,init,aindex):
         "Initialization, requires range, Energy, L, initial conditions and the index to be sampled at."
         self.rvalues=rvalues
@@ -106,8 +121,10 @@ def twodplot(x,y,title,xaxis,yaxis):
     plt.title(title)
     plt.xlabel(xaxis)
     plt.ylabel(yaxis)
+        
+
 init=[.001,.001]
-r=np.linspace(.0001,10000,200)
+r=np.linspace(.0001,100,1000)
 Energies=[.1,10]   
 Ls=[0,1,2]
 mychi=[]
@@ -127,40 +144,40 @@ for vars in product(Energies,Ls):
 
     radwaves.append(radwav)
     
-for xx in r:
-    mychi.append( 1j/2*(HenkelMinus(radwaves[0].GetK()*xx,radwaves[0].L)-radwaves[0].SMat*HenkelPlus(radwaves[0].GetK()*xx,radwaves[0].L)))
-    pychi.append( np.sqrt(xx)*1j/2*(special.hankel2(radwaves[0].L,radwaves[0].GetK()*xx)-radwaves[0].SMat*special.hankel2(radwaves[0].L,radwaves[0].GetK()*xx)))
+# for xx in r:
+#     mychi.append( 1j/2*(HenkelMinus(radwaves[0].GetK()*xx,radwaves[0].L)-radwaves[0].SMat*HenkelPlus(radwaves[0].GetK()*xx,radwaves[0].L)))
+#     pychi.append( np.sqrt(xx)*1j/2*(special.hankel2(radwaves[0].L,radwaves[0].GetK()*xx)-radwaves[0].SMat*special.hankel2(radwaves[0].L,radwaves[0].GetK()*xx)))
 rs=np.linspace(100,10000,100)
-print(mychi)
-print(len(mychi))
+#print(mychi)
+#print(len(mychi))
 deltas=[]
 sindeltas=[]
 Ss=[]
 CrossSections=[]
-
-for a in rs:
-    Energy=10
-    L=0
-    rr=np.linspace(.00001,a,1000)
-    radwav=chi(rr,Energy,L,init,ain)
-    radwav.SetDiffEq()
-    radwav.SolveDifeq()
-    radwav.SetRMatrix()
-    radwav.SetSMatrix()
-    radwav.SetDelta()
-    radwav.SetSinDelta()
-    radwav.SetCrossSection()
-    deltas.append(radwav.delta)
-    sindeltas.append(radwav.sindelta)
-    Ss.append(radwav.SMat)
-    CrossSections.append(radwav.crosssection)
-twodplot(rs,deltas,"delta vs a at Energy .1 MeV and L 1","r(fm)", "delta")
-twodplot(rs,sindeltas,"sin delta vs a at Energy .1 MeV and L 1","r(fm)", "sin delta")
-#twodplot(rs,Ss,"S vs a at Energy .1 MeV and L 1","r(fm)", "S")
-#twodplot(r,mychi,"mychi","x","chi")
-#twodplot(r,pychi,"pychi","x","chi")
-twodplot(rs,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
-EnergiesDelta=np.linspace(.1,4,8)
+# 
+# for a in rs:
+#     Energy=10
+#     L=0
+#     rr=np.linspace(.00001,a,1000)
+#     radwav=chi(rr,Energy,L,init,ain)
+#     radwav.SetDiffEq()
+#     radwav.SolveDifeq()
+#     radwav.SetRMatrix()
+#     radwav.SetSMatrix()
+#     radwav.SetDelta()
+#     radwav.SetSinDelta()
+#     radwav.SetCrossSection()
+#     deltas.append(radwav.delta)
+#     sindeltas.append(radwav.sindelta)
+#     Ss.append(radwav.SMat)
+#     CrossSections.append(radwav.crosssection)
+# twodplot(rs,deltas,"delta vs a at Energy .1 MeV and L 1","r(fm)", "delta")
+# twodplot(rs,sindeltas,"sin delta vs a at Energy .1 MeV and L 1","r(fm)", "sin delta")
+# #twodplot(rs,Ss,"S vs a at Energy .1 MeV and L 1","r(fm)", "S")
+# #twodplot(r,mychi,"mychi","x","chi")
+# #twodplot(r,pychi,"pychi","x","chi")
+# twodplot(rs,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
+EnergiesDelta=np.linspace(.1,4,50)
 for L in Ls:
     deltasen=[]
     sindeltasen=[]
@@ -187,31 +204,31 @@ for L in Ls:
         rmats.append(np.abs(radwav.Rmat))
         crosssections.append(radwav.crosssection)
         rmatsfromsmats.append(1/radwav.rvalues[ain]*(HenkelMinus(radwav.GetK()*radwav.rvalues[ain],radwav.L)-radwav.SMat*HenkelPlus(radwav.GetK()*radwav.rvalues[-1],radwav.L))/((HenkelMinusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK())-radwav.SMat*HenkelPlusPrime(radwav.GetK()*radwav.rvalues[-1],radwav.L,radwav.GetK()))))
-    twodplot(EnergiesDelta,deltasen," delta vs Energy for  L "+str(L),"E(MeV)", "delta")
+    twodplot(EnergiesDelta,makeanglecontinuous(deltasen)," delta vs Energy for  L "+str(L),"E(MeV)", "delta")
     #twodplot(EnergiesDelta,sindeltasen," sin delta vs Energy for  L "+str(L),"E(MeV)", " sin delta")
     #twodplot(EnergiesDelta,Smats," SMat vs Energy for  L "+str(L),"E(MeV)", " SMat")
     #twodplot(EnergiesDelta,rmats," RMat vs Energy for  L "+str(L),"E(MeV)", " RMat")
    # twodplot(EnergiesDelta,rmatsfromsmats," RMat from Smat vs Energy for  L "+str(L),"E(MeV)", " RMat")
-    twodplot(EnergiesDelta,crosssections," Cross section vs Energy for  L "+str(L),"E(MeV)", " Cross Section")
-PrimeCrossSections=[]
-primes=np.linspace(.001,10000,1000)
-for prime in primes:
-    Energy=10
-    L=0
-    inits=[0,prime]
-    rr=np.linspace(.00001,100,1000)
-    radwav=chi(rr,Energy,L,inits,ain)
-    radwav.SetDiffEq()
-    radwav.SolveDifeq()
-    radwav.SetRMatrix()
-    radwav.SetSMatrix()
-    radwav.SetDelta()
-    radwav.SetSinDelta()
-    radwav.SetCrossSection()
-    #deltas.append(radwav.delta)
-    #sindeltas.append(radwav.sindelta)
-    #Ss.append(radwav.SMat)
-    PrimeCrossSections.append(radwav.crosssection)
-twodplot(primes,PrimeCrossSections,"Cross Section as Value of Initial Condition","chi'(0)", "Cross Section(arb units)")
+    twodplot(EnergiesDelta,crosssections," Cross section vs Energy for  L "+str(L),"E (MeV)", r" Cross Section (barns)")
+# PrimeCrossSections=[]
+# primes=np.linspace(.001,10000,10)
+# for prime in primes:
+#     Energy=10
+#     L=0
+#     inits=[0,prime]
+#     rr=np.linspace(.00001,100,1000)
+#     radwav=chi(rr,Energy,L,inits,ain)
+#     radwav.SetDiffEq()
+#     radwav.SolveDifeq()
+#     radwav.SetRMatrix()
+#     radwav.SetSMatrix()
+#     radwav.SetDelta()
+#     radwav.SetSinDelta()
+#     radwav.SetCrossSection()
+#     #deltas.append(radwav.delta)
+#     #sindeltas.append(radwav.sindelta)
+#     #Ss.append(radwav.SMat)
+#     PrimeCrossSections.append(radwav.crosssection)
+# twodplot(primes,PrimeCrossSections,"Cross Section as Value of Initial Condition","chi'(0)", "Cross Section(arb units)")
 plt.show()
 
