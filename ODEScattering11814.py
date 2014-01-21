@@ -177,7 +177,7 @@ CrossSections=[]
 # #twodplot(r,mychi,"mychi","x","chi")
 # #twodplot(r,pychi,"pychi","x","chi")
 # twodplot(rs,CrossSections,"Cross sections vs a", "a(fm)","Cross Section")
-EnergiesDelta=np.linspace(.1,4,50)
+EnergiesDelta=np.linspace(.1,4,1000)
 for L in Ls:
     deltasen=[]
     sindeltasen=[]
